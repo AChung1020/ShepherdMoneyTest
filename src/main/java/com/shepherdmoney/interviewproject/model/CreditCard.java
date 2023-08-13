@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 // TODO: Credit card's owner. For detailed hint, please see User class
@@ -39,51 +39,53 @@ public class CreditCard {
     private String cardNumber;
 
     @ManyToOne
-    @JoinColumn(name = "user_id") // The foreign key column linking to the User entity
-    private User user; // Represents the owner of the credit card
+    @JoinColumn(name = "userID")
+    private User user;
 
-    @ElementCollection
-    @CollectionTable(name = "CreditCardBalanceHistory")
-    @OrderColumn(name = "history_index")
-    private List<BalanceHistoryEntry> balanceHistory;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "credit_card_id")
+    private List<BalanceHistory> balanceHistory = new ArrayList<>();
 
     // -------------------------------------------- Constructor --------------------------------------------------------\
 
-    public CreditCard(String issuanceBank, String cardNumber, User owner, List<BalanceHistoryEntry> balanceHistory) {
+    public CreditCard(String issuanceBank, String cardNumber, User user) {
         this.issuanceBank = issuanceBank;
         this.cardNumber = cardNumber;
-        this.user = owner;
-        this.balanceHistory = balanceHistory;
+        this.user = user;
     }
 
     // -------------------------------------------- Getters and Setters ------------------------------------------------
 
     public String getIssuanceBank() {
+
         return this.issuanceBank;
     }
     public void setIssuanceBank(String issuanceBank) {
+
         this.issuanceBank = issuanceBank;
     }
 
     public String getCardNumber() {
+
         return this.cardNumber;
     }
-    public void setCardNumber() {
+    public void setCardNumber(String cardNumber) {
+
         this.cardNumber = cardNumber;
+    }
+
+    public List<BalanceHistory> getBalanceHistory() {
+
+        return this.balanceHistory;
+    }
+    public void setBalanceHistory(List<BalanceHistory> balanceHistory) {
+
+        this.balanceHistory = balanceHistory;
     }
 
     public User getUser() {
         return this.user;
-    }
-    public void setUser(User suer) {
-        this.user = user;
-    }
-
-    public List<BalanceHistoryEntry> getBalanceHistory() {
-        return this.balanceHistory;
-    }
-    public void setBalanceHistory(List<BalanceHistoryEntry> balanceHistory) {
-        this.balanceHistory = balanceHistory;
     }
 }
 

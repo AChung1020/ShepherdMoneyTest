@@ -1,5 +1,6 @@
 package com.shepherdmoney.interviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 // TODO: User's credit card
@@ -30,17 +32,17 @@ public class User {
 
     private String email;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate DOB;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CreditCard> creditCards;
+    private List<CreditCard> creditCards = new ArrayList<>();
 
     // -------------------------------------------- Constructor --------------------------------------------------------
-    public User(String name, String email, LocalDate DOB, List<CreditCard> creditCards) {
+    public User(String name, String email, LocalDate DOB) {
         this.name = name;
         this.email = email;
         this.DOB = DOB;
-        this.creditCards = creditCards;
     }
 
     // -------------------------------------------- Getters and Setters ------------------------------------------------
@@ -67,11 +69,12 @@ public class User {
     }
 
     public List<CreditCard> getCreditCards() {
-        return creditCards;
+        return this.creditCards;
     }
     public void setCreditCards(List<CreditCard> creditCards) {
         this.creditCards = creditCards;
     }
+
 
 }
 
