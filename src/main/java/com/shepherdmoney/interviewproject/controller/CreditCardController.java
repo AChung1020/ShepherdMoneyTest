@@ -152,16 +152,17 @@ public class CreditCardController {
                     localBalanceHistory.add(newHistory);
                 }
 
-                // Sort the balance history list by date
+                // Sort the balance history list by date, from recent to least recent
                 Collections.sort(localBalanceHistory, Comparator.comparing(BalanceHistory::getDate));
+                Collections.reverse(localBalanceHistory);
 
+                //save updated balance history to creditCardRepository
                 creditCard.setBalanceHistory(localBalanceHistory);
                 creditCardRepository.save(creditCard);
             } else {
                 return ResponseEntity.badRequest().body("This card number does not exist!");
             }
         }
-
 
         return ResponseEntity.ok("Balance history updated successfully.");
     }
