@@ -10,6 +10,7 @@ import com.shepherdmoney.interviewproject.vo.request.UpdateBalancePayload;
 import com.shepherdmoney.interviewproject.vo.response.CreditCardView;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,29 +33,37 @@ public class CreditCardController {
 
     @PostMapping("/credit-card")
     public ResponseEntity<Integer> addCreditCardToUser(@RequestBody AddCreditCardToUserPayload payload) {
-        int userID = payload.getUserId();
+        try {
+            //check if payload has card information and issuance bank
+            if (payload == null || payload.getCardIssuanceBank() == null || payload.getCardNumber() == null) {
+                return ResponseEntity.badRequest().build();
+            }
 
-        // Check if the user exists
-        if (!userRepository.existsById(userID)) {
-            return ResponseEntity.notFound().build();
-        }
+            int userID = payload.getUserId();
 
-        //get user by userID
-        User user = userRepository.getReferenceById(userID);
+            // Check if the user exists
+            if (!userRepository.existsById(userID)) {
+                return ResponseEntity.notFound().build();
+            }
 
-        // Create and save the credit card
-        CreditCard card = new CreditCard(payload.getCardIssuanceBank(), payload.getCardNumber(), user);
-        CreditCard savedCard = creditCardRepository.save(card);
+            //get user by userID
+            User user = userRepository.getReferenceById(userID);
 
-        //add credit card to User list of credit cards
-        List<CreditCard> list = user.getCreditCards();
-        list.add(savedCard);
-        user.setCreditCards(list);
-        userRepository.save(user);
+            // Create and save the credit card
+            CreditCard card = new CreditCard(payload.getCardIssuanceBank(), payload.getCardNumber(), user);
+            CreditCard savedCard = creditCardRepository.save(card);
 
-        return ResponseEntity.ok(savedCard.getId());
+            //add credit card to User list of credit cards
+            List<CreditCard> list = user.getCreditCards();
+            list.add(savedCard);
+            user.setCreditCards(list);
+            userRepository.save(user);
 
-        //prob need mroe exceptions
+            return ResponseEntity.ok(savedCard.getId());
+        } catch (Exception e) {
+                // Handle database, validation, or other exceptions
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
     }
 
 
